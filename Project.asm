@@ -2,6 +2,7 @@
 ;Bilal Ahmed Khalil 44926
 ;Nasir Hussian      43913
 
+
 .386
 .model flat,stdcall
 .stack 4096
@@ -12,7 +13,6 @@ Vehicle Struct
     Number Dword ?
     TypeV Dword ?
 Vehicle Ends
-
 
 .data
     TVehicles Dword 2
@@ -33,23 +33,21 @@ Vehicle Ends
     EnterNumber Byte 0ah,0dh,"Enter Vehicle Number :",0
     EnterType Byte 0ah,0dh,"Enter Vehicle Type ",0ah,0dh,"Press 1 for Car",0ah,0dh,"Press 2 for Bike",0ah,0dh,"Press 3 for Truck :",0
     errorv Byte "Vehicle Not Found",0
+        errorinsert Byte "No slot Available ",0
     EnterModify Byte 0ah,0dh,"Enter New Details",0
     Tv Byte 0ah,0dh,"Totals :",0
     again Byte 0ah,0dh,"Press 'y' to try again :"
 
 .code
 main PROC
-LoopT:
-    mov edx,0
-    mov esi,0
-    call clrscr
-    mov esi, offset Vi
+mov esi, offset Vi
     mov [esi].Vehicle.Number,1122
     mov [esi].Vehicle.TypeV,1
     add esi, TYPE Vehicle
     mov [esi].Vehicle.Number,44926
     mov [esi].Vehicle.TypeV,2
-    
+LoopT:
+    call clrscr    
     mov edx,offset entermsg
     call writeString
     call ReadInt
@@ -66,8 +64,8 @@ LoopT:
     je CheckOutLabel
     cmp choice,6
     je DisplayAllLabel
-        cmp choice,7
-    je ShowTotals
+     cmp choice,7
+     je ShowTotalsLable
     jmp exitl
 
 DisplayLabel:
@@ -98,6 +96,7 @@ ShowTotalsLable:
 call ShowTotals
 
 exitl:
+mov edx,0
 mov edx,offset again
 call writeString
 call ReadChar
@@ -107,9 +106,6 @@ cmp al,'Y'
 je LoopT
     INVOKE ExitProcess,0
 main ENDP
-
-
-
 
 
 Display PROC
@@ -200,7 +196,6 @@ VehicleFound:
     cmp [esi].Vehicle.TypeV, 3
     je PTruck
     jmp SearchEnd
-
 PCar:
     mov edx, offset car
     call WriteString
@@ -224,9 +219,6 @@ SearchEnd:
 Search ENDP
 
 
-
-
-
 InsertV PROC
     mov edx, offset EnterNumber
     call WriteString
@@ -247,30 +239,32 @@ FindEmptySlot:
     jmp NoEmptySlotFound
 
 FoundEmptySlot:
-    mov [esi].Vehicle.Number, ebx
+    mov [esi].Vehicle.Number,ebx
     mov [esi].Vehicle.TypeV, eax
     inc TVehicles
-    cmp ebx, 1
+    cmp [esi].Vehicle.TypeV,1
     je IncCars
-    cmp ebx, 2
+    cmp [esi].Vehicle.TypeV,2
     je IncBikes
-    cmp ebx, 3
+    cmp [esi].Vehicle.TypeV,3
     je IncTrucks
     jmp InsertEnd
 
 IncCars:
-    inc TCars
+    add TCars,1
     jmp InsertEnd
 
 IncBikes:
-    inc TBikes
+     add TBikes,1
     jmp InsertEnd
 
 IncTrucks:
-    inc TTruck
+    add TTruck,1
     jmp InsertEnd
 
 NoEmptySlotFound:
+mov edx,offset errorinsert
+call writeString
 InsertEnd:
     ret
 InsertV ENDP
@@ -427,6 +421,8 @@ EndDisplay:
     ret
 DisplayAll ENDP
 
+
+
 ShowTotals PROC
     call crlf
     mov edx,offset tv
@@ -441,25 +437,23 @@ ShowTotals PROC
 
     mov edx, offset car
     call WriteString
-    mov eax, TCars
+    mov eax,TCars
     call WriteDec
     call crlf
 
     mov edx, offset bike
     call WriteString
-    mov eax, TBikes
+    mov eax,TBikes
     call WriteDec
     call crlf
 
     mov edx, offset truck
     call WriteString
-    mov eax, TTruck
+    mov eax,TTruck
     call WriteDec
     call crlf
-
     ret
 ShowTotals ENDP
-
 
 
 END main
