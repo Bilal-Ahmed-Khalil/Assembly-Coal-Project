@@ -2,7 +2,6 @@
 ;Bilal Ahmed Khalil 44926
 ;Nasir Hussian      43913
 
-
 .386
 .model flat,stdcall
 .stack 4096
@@ -359,10 +358,6 @@ CheckOutEnd:
 CheckOut ENDP
 
 
-
-
-
-
 DisplayAll PROC
     mov ebx,1
     mov esi, offset Vi
@@ -454,6 +449,5 @@ ShowTotals PROC
     call crlf
     ret
 ShowTotals ENDP
-
 
 END main
